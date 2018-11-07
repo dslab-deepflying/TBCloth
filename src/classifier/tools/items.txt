@@ -1,0 +1,6 @@
+itmeid label
+29 jean
+49 miniskirt
+59 miniskirt
+109 sweatshirt
+119 suit
