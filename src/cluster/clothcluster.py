@@ -1,11 +1,15 @@
-from imagecluster import main
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from src.cluster.imagecluster import main
 from keras import backend as K
 K.clear_session()
+
 import shutil
 import random
-import os
 import pandas as pd
 from PIL import Image
+
 
 sample_num = 5
 sim = 0.52
