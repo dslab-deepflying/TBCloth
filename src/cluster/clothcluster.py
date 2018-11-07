@@ -9,22 +9,23 @@ import pandas as pd
 from PIL import Image
 
 
-sample_num = 5
+sample_num = 50
 sim = 0.52
 
-tar_img_path = '/home/jc/codes/Projects/imagecluster/imgs/'
+tar_img_path = os.path[0]+'/imgs/'
 src_img_path = '/home/jc/Data/tianchi/TaoBaoClothesMatchingData/images/'
-
+itemstxt_path = '/home/jc/codes/Projects/TBCloth/src/classifier/tools/items.txt'
 
 
 def random_sample():
-    l1=list(pd.read_table('items.txt',sep=' ')['itemid'])
+    l1=list(pd.read_table(itemstxt_path,sep=' ')['itemid'])
     sp_l = random.sample(l1,sample_num)
     try:
         for itemid in sp_l:
             shutil.copy(src_img_path+str(itemid)+'.jpg',tar_img_path)
-    except FileNotFoundError:
-        print('emm...')
+    except Exception,e:
+    #except FileNotFoundError : # python3
+        print(str(itemid)+'.jpg lost !')
 
 
 def gray_sacale():
@@ -54,7 +55,8 @@ def remove_result(remove_src = True):
     shutil.rmtree(tar_img_path+'imagecluster')
 
 def generate():
-    #random_sample()
+    remove_result()
+    random_sample()
     #gray_sacale()
     main.main(tar_img_path, sim=sim)
     K.clear_session()

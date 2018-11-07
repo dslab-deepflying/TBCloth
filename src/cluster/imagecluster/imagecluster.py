@@ -3,9 +3,9 @@ from scipy.cluster import hierarchy
 import numpy as np
 
 import PIL.Image, os, shutil
-from keras.applications.vgg16 import VGG16
+from keras.applications.resnet50 import ResNet50
 from keras.preprocessing import image
-from keras.applications.vgg16 import preprocess_input
+from keras.applications.resnet50 import preprocess_input
 from keras.models import Model
 import common as co
 #from imagecluster import common as co
@@ -30,9 +30,9 @@ def get_model():
     #     _________________________________________________________________
     #     predictions (Dense)          (None, 1000)              4097000
     #
-    base_model = VGG16(weights='imagenet', include_top=True)
+    base_model = ResNet50(weights='imagenet', include_top=True)
     model = Model(inputs=base_model.input,
-                  outputs=base_model.get_layer('fc2').output)
+                  outputs=base_model.get_layer('fc1000').output)
     return model
 
 
@@ -200,5 +200,7 @@ def make_links(clusters, cluster_dr):
                     'cluster_{}'.format(iclus))
             for fn in lst:
                 link = pj(dr, os.path.basename(fn))
-                os.makedirs(os.path.dirname(link), exist_ok=True)
+                if os.path.exists(os.path.dirname(link)):
+                    shutil.rmtree(os.path.dirname(link))
+                os.makedirs(os.path.dirname(link))
                 os.symlink(os.path.abspath(fn), link)

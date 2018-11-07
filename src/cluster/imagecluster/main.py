@@ -5,10 +5,10 @@ import common as co
 pj = os.path.join
 
 
-ic_base_dir = 'imagecluster'
+#ic_base_dir = 'imagecluster'
 
 
-def main(imagedir, sim=0.5):
+def main(imagedir,ic_base_dir = 'imagecluster', sim=0.5):
     """Example main app using this library.
     
     Parameters
@@ -20,6 +20,8 @@ def main(imagedir, sim=0.5):
     """
     dbfn = pj(imagedir, ic_base_dir, 'fingerprints.pk')
     if not os.path.exists(dbfn):
+        if os.path.exists(os.path.dirname(dbfn)):
+            os.removedirs(os.path.dirname(dbfn))
         os.makedirs(os.path.dirname(dbfn)) #, exist_ok=True
         print("no fingerprints database {} found".format(dbfn))
         files = co.get_files(imagedir)
