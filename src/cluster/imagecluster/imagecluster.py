@@ -81,7 +81,9 @@ def fingerprint(fn, model, size):
     # VGG16).
     if arr3d.shape[2] == 1:
         arr3d = arr3d.repeat(3, axis=2)
-    
+
+    PIL.Image(image.array_to_img(arr3d)).show()
+
     # (1, 224, 224, 3)
     arr4d = np.expand_dims(arr3d, axis=0)
     
@@ -200,7 +202,7 @@ def make_links(clusters, cluster_dr):
                     'cluster_{}'.format(iclus))
             for fn in lst:
                 link = pj(dr, os.path.basename(fn))
-                if os.path.exists(os.path.dirname(link)):
-                    shutil.rmtree(os.path.dirname(link))
-                os.makedirs(os.path.dirname(link))
+                if not os.path.exists(os.path.dirname(link)):
+                    #shutil.rmtree(os.path.dirname(link))
+                    os.makedirs(os.path.dirname(link))
                 os.symlink(os.path.abspath(fn), link)

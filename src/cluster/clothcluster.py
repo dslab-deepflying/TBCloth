@@ -1,5 +1,6 @@
 import os
-from src.cluster.imagecluster import main
+from src.cluster.imagecluster import main  # use pycharm run
+#from imagecluster import main   # use python command line
 from keras import backend as K
 K.clear_session()
 
@@ -9,23 +10,27 @@ import pandas as pd
 from PIL import Image
 
 
-sample_num = 50
-sim = 0.52
+sample_num = 2
+sim = 0.6
 
-tar_img_path = os.path[0]+'/imgs/'
+tar_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/'
 src_img_path = '/home/jc/Data/tianchi/TaoBaoClothesMatchingData/images/'
 itemstxt_path = '/home/jc/codes/Projects/TBCloth/src/classifier/tools/items.txt'
+sec_path='/home/jc/codes/Projects/TBCloth/src/cluster/imgs/imagecluster/clusters/cluster_with_2024/cluster_0/'
 
 
 def random_sample():
     l1=list(pd.read_table(itemstxt_path,sep=' ')['itemid'])
     sp_l = random.sample(l1,sample_num)
-    try:
-        for itemid in sp_l:
-            shutil.copy(src_img_path+str(itemid)+'.jpg',tar_img_path)
-    except Exception,e:
-    #except FileNotFoundError : # python3
-        print(str(itemid)+'.jpg lost !')
+    print(sp_l.__len__())
+
+    for itemid in sp_l:
+        try:
+            shutil.copy(src_img_path + str(itemid) + '.jpg', tar_img_path)
+        except Exception, e:
+            # except FileNotFoundError : # python3
+            print(str(itemid)+'.jpg lost !')
+        continue
 
 
 def gray_sacale():
@@ -55,7 +60,7 @@ def remove_result(remove_src = True):
     shutil.rmtree(tar_img_path+'imagecluster')
 
 def generate():
-    remove_result()
+    #remove_result()
     random_sample()
     #gray_sacale()
     main.main(tar_img_path, sim=sim)
