@@ -14,7 +14,8 @@ def main():
         print('sum former i :'+str(i) + ' and percentage is '+str(itemCates.value_counts()[:i].sum()*1.0/itemsData.__len__()))
 
     print('None count: %d in %d (%f)'%(itemCates.value_counts()['None'], itemsData.__len__(),itemCates.value_counts()['None']*1.0/itemsData.__len__()))
-    
-    itemCates.value_counts().to_csv('222.txt')
+
+    # If you need a specific data of this classification
+    #itemCates.value_counts().to_csv('valueCounts.txt')
 
 main()

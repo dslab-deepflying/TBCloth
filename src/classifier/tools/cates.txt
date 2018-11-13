@@ -5,9 +5,9 @@ id,cate
 3,sandal
 4,overskirt
 5,gown
-6,fur_coat
+6,fur coat
 7,purse
-8,trench_coat
+8,trench coat
 9,clog
 10,maillot
 11,stole
@@ -17,38 +17,38 @@ id,cate
 15,sweatshirt
 16,apron
 17,hoopskirt
-18,running_shoe
+18,running shoe
 19,abaya
 20,poncho
 21,backpack
 22,sunglasses
-23,cowboy_boot
-24,lab_coat
+23,cowboy boot
+24,lab coat
 25,sarong
 26,cloak
 27,kimono
-28,swimming_trunks
+28,swimming trunks
 29,vestment
 30,wallet
 31,sock
 32,wool
 33,sunglass
 34,brassiere
-35,bulletproof_vest
+35,bulletproof vest
 36,bikini
 37,handkerchief
-38,knee_pad
+38,knee pad
 39,bonnet
-40,hair_slide
-41,bath_towel
-42,cowboy_hat
-43,bow_tie
+40,hair slide
+41,bath towel
+42,cowboy hat
+43,bow tie
 44,holster
 45,wig
 46,packet
-47,ski_mask
-48,shower_cap
+47,ski mask
+48,shower cap
 49,sombrero
-50,military_uniform
-51,Christmas_stocking
+50,military uniform
+51,Christmas stocking
 52,suit
