@@ -1,0 +1,54 @@
+name,index
+abaya,400
+apron,412
+backpack,415
+bath towel,435
+bikini,446
+bonnet,453
+bow tie,458
+brassiere,460
+bulletproof vest,466
+cardigan,475
+Christmas stocking,497
+cloak,502
+clog,503
+cowboy boot,515
+cowboy hat,516
+fur coat,569
+gown,579
+hair slide,585
+handkerchief,592
+holster,598
+hoopskirt,602
+jean,609
+jersey,611
+kimono,615
+knee pad,616
+lab coat,618
+Loafer,631
+maillot,640
+military uniform,653
+miniskirt,656
+overskirt,690
+packet,693
+pajama,698
+poncho,736
+purse,749
+running shoe,771
+sandal,775
+sarong,776
+shower cap,794
+ski mask,797
+sock,807
+sombrero,809
+stole,825
+suit,835
+sunglass,838
+sunglasses,838
+sweatshirt,842
+swimming trunks,843
+trench coat,870
+vestment,888
+wallet,894
+wig,904
+wool,912
