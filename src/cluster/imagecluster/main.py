@@ -34,4 +34,4 @@ def main(imagedir,ic_base_dir = 'imagecluster', sim=0.5):
         print("loading fingerprints database {} ...".format(dbfn))
         fps = co.read_pk(dbfn)
     print("clustering ...")
-    ic.make_links(ic.cluster(fps, sim), pj(imagedir, ic_base_dir, 'clusters'))
+    ic.make_links(ic.cluster(fps, sim,method='average'), pj(imagedir, ic_base_dir, 'clusters'))

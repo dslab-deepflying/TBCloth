@@ -1,5 +1,6 @@
-import os
+import os,sys
 from src.cluster.imagecluster import main  # use pycharm run
+from src.cluster.imagecluster import common as co
 #from imagecluster import main   # use python command line
 from keras import backend as K
 K.clear_session()
@@ -10,8 +11,8 @@ import pandas as pd
 from PIL import Image
 
 
-sample_num = 2
-sim = 0.6
+sample_num = 50
+sim = 0.45
 
 tar_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/'
 src_img_path = '/home/jc/Data/tianchi/TaoBaoClothesMatchingData/images/'
@@ -57,19 +58,24 @@ def remove_result(remove_src = True):
             break
         for file in files:
             os.remove(tar_img_path + file)
-    shutil.rmtree(tar_img_path+'imagecluster')
+    if os.path.exists(tar_img_path+'imagecluster'):
+        shutil.rmtree(tar_img_path+'imagecluster')
 
 def generate():
     #remove_result()
-    random_sample()
+    #random_sample()
     #gray_sacale()
     main.main(tar_img_path, sim=sim)
     K.clear_session()
 
-
+def readFP():
+    a = co.read_pk(sys.path[0]+'/imgs/imagecluster/fingerprints.pk')
+    print(a)
 #gray_sacale()
 #remove_result()
 #remove_result(False)
 #random_sample()
 generate()
+
+#readFP()
 

@@ -3,12 +3,14 @@ from scipy.cluster import hierarchy
 import numpy as np
 
 import PIL.Image, os, shutil
-from keras.applications.resnet50 import ResNet50
+from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
-from keras.applications.resnet50 import preprocess_input
+from keras.applications.vgg16 import preprocess_input
 from keras.models import Model
 import common as co
 #from imagecluster import common as co
+
+
 
 pj = os.path.join
 
@@ -30,9 +32,9 @@ def get_model():
     #     _________________________________________________________________
     #     predictions (Dense)          (None, 1000)              4097000
     #
-    base_model = ResNet50(weights='imagenet', include_top=True)
+    base_model = VGG16(weights='imagenet', include_top=True)
     model = Model(inputs=base_model.input,
-                  outputs=base_model.get_layer('fc1000').output)
+                  outputs=base_model.get_layer('fc2').output)
     return model
 
 
@@ -82,7 +84,10 @@ def fingerprint(fn, model, size):
     if arr3d.shape[2] == 1:
         arr3d = arr3d.repeat(3, axis=2)
 
-    PIL.Image(image.array_to_img(arr3d)).show()
+    # Indeed, this gray-scale-hack code does not work at all
+    # You will find they have no difference between source-image
+    # when you display them after that
+    # PIL.Image._show(image.array_to_img(arr3d))
 
     # (1, 224, 224, 3)
     arr4d = np.expand_dims(arr3d, axis=0)
@@ -172,6 +177,8 @@ def cluster(fps, sim=0.5, method='average', metric='euclidean'):
     cluster_dct = dict((ii,[]) for ii in np.unique(cut))
     for iimg,iclus in enumerate(cut):
         cluster_dct[iclus].append(files[iimg])
+
+    print(list(cluster_dct.values()))
     return list(cluster_dct.values())
 
 
