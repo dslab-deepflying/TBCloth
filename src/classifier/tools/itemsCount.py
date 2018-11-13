@@ -10,6 +10,11 @@ def main():
                       header=None,sep=' ',names=['itemID','category'])
     itemCates =  itemsData['category']
 
-    print(itemCates.sort_values().value_counts().sum())
+    for i in [5 ,10 ,20 ,30,50,70]:
+        print('sum former i :'+str(i) + ' and percentage is '+str(itemCates.value_counts()[:i].sum()*1.0/itemsData.__len__()))
+
+    print('None count: %d in %d (%f)'%(itemCates.value_counts()['None'], itemsData.__len__(),itemCates.value_counts()['None']*1.0/itemsData.__len__()))
+    
+    itemCates.value_counts().to_csv('222.txt')
 
 main()
