@@ -1,16 +1,18 @@
 #! /usr/bin/python
 # -*- coding = utf-8 -*-
-
+import keras
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg16 import decode_predictions
 import pandas as pd
 import numpy as np
 from keras.preprocessing import image
-
+import os
 
 imgnet_txt_path = '/home/jc/codes/Projects/TBCloth/src/cluster/tools/imagenet1000_clsid_to_human.txt'
 cate_txt_path = '/home/jc/codes/Projects/TBCloth/src/classifier/tools/cates.txt'
 test_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/3007781.jpg'
+
+cate_index_txt_path = os.path.dirname(os.getcwd()) + '/tools/catesIndex.txt'
 
 def get_model():
     '''
@@ -63,9 +65,16 @@ def model_test():
 
     # The 770 is the index of 'running_shoe' in that txt file
     # you will find they have the same number (Other also works)
-    print(list(pred[0])[770])
-    print(decode_predictions(pred)[0][0])
+    # print(list(pred[0])[770])
+    # print(decode_predictions(pred)[0][0])
 
+    cates = pd.read_table(cate_index_txt_path, sep=',')['index']
+    arr_p = pred[0, :]
+    arr_p = [arr_p[i] for i in cates]
+    print (arr_p)
 
-main()
+#main()
+#model_test()
 
+model = keras.applications.xception.Xception(include_top=True, weights='imagenet')
+model.summary()

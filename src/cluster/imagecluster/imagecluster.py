@@ -1,16 +1,16 @@
 from scipy.spatial import distance
 from scipy.cluster import hierarchy
 import numpy as np
-
 import PIL.Image, os, shutil
-from keras.applications.vgg16 import VGG16
+from keras.applications.xception import Xception
 from keras.preprocessing import image
-from keras.applications.vgg16 import preprocess_input
+from keras.applications.xception import preprocess_input
 from keras.models import Model
+import pandas as pd
 import common as co
 #from imagecluster import common as co
 
-
+cate_index_txt_path = '/home/jc/codes/Projects/TBCloth/src/cluster/tools/catesIndex.txt'
 
 pj = os.path.join
 
@@ -32,9 +32,9 @@ def get_model():
     #     _________________________________________________________________
     #     predictions (Dense)          (None, 1000)              4097000
     #
-    base_model = VGG16(weights='imagenet', include_top=True)
+    base_model = Xception(weights='imagenet', include_top=True)
     model = Model(inputs=base_model.input,
-                  outputs=base_model.get_layer('fc2').output)
+                  outputs=base_model.get_layer('avg_pool').output)
     return model
 
 
@@ -94,7 +94,19 @@ def fingerprint(fn, model, size):
     
     # (1, 224, 224, 3)
     arr4d_pp = preprocess_input(arr4d)
-    return model.predict(arr4d_pp)[0,:]
+
+    # Original code of return all of this array
+    return model.predict(arr4d_pp)[0, :]
+
+    # use prediction of cloth to be a fingerprint
+    # however it has poor ability to cluster them ...
+
+    # cates = pd.read_table(cate_index_txt_path,sep=',')['index']
+    # arr_p = model.predict(arr4d_pp)[0,:]
+    # arr_p = [arr_p[i] for i in cates]
+    #
+    # return arr_p
+
 
 
 # Cannot use multiprocessing (only tensorflow backend tested):
@@ -138,7 +150,7 @@ def fingerprints(files, model, size=(224,224)):
     return dict((fn, fingerprint(fn, model, size)) for fn in files)
 
 
-def cluster(fps, sim=0.5, method='average', metric='euclidean'):
+def cluster(fps, sim=0.5, method='average', metric='cosine'):
     """Hierarchical clustering of images based on image fingerprints.
 
     Parameters

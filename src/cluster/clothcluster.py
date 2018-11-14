@@ -11,8 +11,9 @@ import pandas as pd
 from PIL import Image
 
 
-sample_num = 50
-sim = 0.45
+sample_num = 200
+sim = 0.5
+
 
 tar_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/'
 src_img_path = '/home/jc/Data/tianchi/TaoBaoClothesMatchingData/images/'
@@ -71,9 +72,11 @@ def generate():
 def readFP():
     a = co.read_pk(sys.path[0]+'/imgs/imagecluster/fingerprints.pk')
     print(a)
-#gray_sacale()
+
+
 #remove_result()
-#remove_result(False)
+remove_result(False)
+#gray_sacale()
 #random_sample()
 generate()
 
