@@ -1,7 +1,7 @@
 from scipy.spatial import distance
 from scipy.cluster import hierarchy
 import numpy as np
-import PIL.Image, os, shutil
+import PIL.Image, os, shutil,sys
 from keras.applications.xception import Xception
 from keras.preprocessing import image
 from keras.applications.xception import preprocess_input
@@ -54,7 +54,7 @@ def fingerprint(fn, model, size):
     -------
     fingerprint : 1d array
     """
-    print(fn)
+    #print(fn)
     
     # keras.preprocessing.image.load_img() uses img.rezize(shape) with the
     # default interpolation of PIL.Image.resize() which is pretty bad (see
@@ -147,8 +147,16 @@ def fingerprints(files, model, size=(224,224)):
          ...
          }
     """
-    return dict((fn, fingerprint(fn, model, size)) for fn in files)
-
+    result = {}
+    num=files.__len__()
+    i=0
+    for fn in files:
+        i+=1
+        result[fn]=fingerprint(fn,model,size)
+        sys.stdout.write('\r['+str(int(i*100.0/num))+']%')
+        sys.stdout.flush()
+    # return dict((fn, fingerprint(fn, model, size)) for fn in files)
+    return result
 
 def cluster(fps, sim=0.5, method='average', metric='cosine'):
     """Hierarchical clustering of images based on image fingerprints.
@@ -190,7 +198,6 @@ def cluster(fps, sim=0.5, method='average', metric='cosine'):
     for iimg,iclus in enumerate(cut):
         cluster_dct[iclus].append(files[iimg])
 
-    print(list(cluster_dct.values()))
     return list(cluster_dct.values())
 
 

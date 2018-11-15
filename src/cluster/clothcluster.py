@@ -15,11 +15,10 @@ sample_num = 200
 sim = 0.5
 
 
-tar_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/'
+tar_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/'  # for random sample
 src_img_path = '/home/jc/Data/tianchi/TaoBaoClothesMatchingData/images/'
 itemstxt_path = '/home/jc/codes/Projects/TBCloth/src/classifier/tools/items.txt'
-sec_path='/home/jc/codes/Projects/TBCloth/src/cluster/imgs/imagecluster/clusters/cluster_with_2024/cluster_0/'
-
+ic_base_dir='imagecluster'
 
 def random_sample():
     l1=list(pd.read_table(itemstxt_path,sep=' ')['itemid'])
@@ -66,7 +65,7 @@ def generate():
     #remove_result()
     #random_sample()
     #gray_sacale()
-    main.main(tar_img_path, sim=sim)
+    main.main(tar_img_path, sim=sim,ic_base_dir=ic_base_dir)
     K.clear_session()
 
 def readFP():
