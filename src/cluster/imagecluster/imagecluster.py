@@ -158,7 +158,7 @@ def fingerprints(files, model, size=(224,224)):
     # return dict((fn, fingerprint(fn, model, size)) for fn in files)
     return result
 
-def cluster(fps, sim=0.5, method='average', metric='cosine'): # metric euclidean
+def cluster(fps, sim=0.5, method='average', metric='euclidean'): # metric euclidean
     """Hierarchical clustering of images based on image fingerprints.
 
     Parameters
