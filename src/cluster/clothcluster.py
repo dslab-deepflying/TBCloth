@@ -4,11 +4,11 @@ from src.cluster.imagecluster import common as co
 #from imagecluster import main   # use python command line
 from keras import backend as K
 K.clear_session()
-
 import shutil
 import random
 import pandas as pd
 from PIL import Image
+import argparse
 
 
 sample_num = 200
@@ -62,9 +62,6 @@ def remove_result(remove_src = True):
         shutil.rmtree(tar_img_path+'imagecluster')
 
 def generate():
-    #remove_result()
-    #random_sample()
-    #gray_sacale()
     main.main(tar_img_path, sim=sim,ic_base_dir=ic_base_dir)
     K.clear_session()
 
@@ -79,5 +76,33 @@ def readFP():
 #random_sample()
 generate()
 
-#readFP()
+
+if __name__ == 'main' or __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='cloth cluster by neural-fingerprints ',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('cmd',choices=['sample','cluster'])
+    parser.add_argument('s_num',default=sample_num)
+    parser.add_argument('src',default=src_img_path)
+    parser.add_argument('base',default=ic_base_dir)
+    parser.add_argument('rmRes',choices=['fp','all','none'],default='none')
+
+    args = parser.parse_args()
+
+
+    if args.rmRes == 'fp':
+        remove_result(False)
+    elif args.rmRes=='all':
+        remove_result()
+
+    if(args.cmd) == 'sample':
+        sample_num = args.s_num
+        random_sample()
+        main.main(tar_img_path, sim=sim, ic_base_dir=ic_base_dir)
+        K.clear_session()
+    else:
+        main.main(src_img_path, sim=sim, ic_base_dir=ic_base_dir)
+        K.clear_session()
+
+
 
