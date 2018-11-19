@@ -74,7 +74,7 @@ def readFP():
 
 
 #remove_result()
-remove_result(False)
+#remove_result(False)
 #gray_sacale()
 #random_sample()
 generate()
