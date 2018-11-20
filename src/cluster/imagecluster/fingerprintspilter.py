@@ -44,7 +44,7 @@ def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir,spiltnum=spiltnum):
             i+=1;
             count=0
             dicts.append({})
-    print ('Spilt fps int %d dicts ' % (i+1))
+    print ('Spilt fps in %d dicts ' % (i+1))
 
     i = 0
     for fpdict in dicts:
@@ -67,8 +67,9 @@ def linkParts( ic_base_dir = ic_base_dir , sim = sim):
 
     for f_dir in dircs:
         fpdict = co.read_pk(ic_base_dir + '/' + f_dir + '/fingerprints.pk')
-        print("[dict%d] has %d is clusting " % (i, fpdict.__len__()))
-        ic.make_links(ic.cluster(dict(fpdict), sim, method='average'), ic_base_dir + '/part' + str(i))
+        print("[dict%d] with %d is clusting " % (i, fpdict.__len__()))
+        ic.make_links(ic.cluster(dict(fpdict), sim, method='average')
+                      , ic_base_dir + '/part' + str(i)+'/cluster')
         i += 1
 
 def rmFiles(tar_dir = ic_base_dir):
@@ -86,4 +87,4 @@ def rmFiles(tar_dir = ic_base_dir):
 
 
 spiltFP()
-#linkParts()
+linkParts()
