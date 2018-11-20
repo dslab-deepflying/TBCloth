@@ -207,20 +207,30 @@ def make_links(clusters, cluster_dr):
     #  number_of_files2: [[list_of_files],...],
     # }
     cdct_multi = {}
+    cdct_none = []
+
+    i=1
+
     for x in clusters:
+        sys.stdout.write('\rdealing: [' + str(int(i * 100.0 / clusters.__len__())) + '%]')
+        i += 1
+
         nn = len(x)
         if nn > 1:
             if not (nn in cdct_multi.keys()):
                 cdct_multi[nn] = [x]
             else:
                 cdct_multi[nn].append(x)
+        else:
+            cdct_none.append(x)
 
-    print("cluster dir: {}".format(cluster_dr))
-    print("cluster size : ncluster")
+    count = 0
+    print("\ncluster dir: {}".format(cluster_dr))
     if os.path.exists(cluster_dr):
         shutil.rmtree(cluster_dr)
     for nn in np.sort(list(cdct_multi.keys())):
         cluster_list = cdct_multi[nn]
+        count += nn*len(cluster_list)
         print("{} : {}".format(nn, len(cluster_list)))
         for iclus, lst in enumerate(cluster_list):
             dr = pj(cluster_dr,
@@ -232,3 +242,14 @@ def make_links(clusters, cluster_dr):
                     #shutil.rmtree(os.path.dirname(link))
                     os.makedirs(os.path.dirname(link))
                 os.symlink(os.path.abspath(fn), link)
+
+    count += cdct_none.__len__()
+    print ('none cluster : %d [%.2f]' % (cdct_none.__len__(),cdct_none.__len__()*1.0/count))
+    for iclus, lst in enumerate(cdct_none):
+        dr = pj(cluster_dr,'none')
+        for fn in lst:
+            link = pj(dr, os.path.basename(fn))
+            if not os.path.exists(os.path.dirname(link)):
+                # shutil.rmtree(os.path.dirname(link))
+                os.makedirs(os.path.dirname(link))
+            os.symlink(os.path.abspath(fn), link)
