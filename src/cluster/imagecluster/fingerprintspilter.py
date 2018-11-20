@@ -3,6 +3,7 @@ import os, re
 import imagecluster as ic
 import common as co
 import math
+import gc
 pj = os.path.join
 import shutil
 
@@ -55,7 +56,11 @@ def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir,spiltnum=spiltnum):
         co.write_pk(fpdict,fp_newdir)
         i += 1
 
+    del fps,dicts
+    gc.collect()
+
 def linkParts( ic_base_dir = ic_base_dir , sim = sim):
+    
     for dirpath, dirnames, filenames in os.walk(ic_base_dir):
         dircs = dirnames
         break
@@ -66,11 +71,15 @@ def linkParts( ic_base_dir = ic_base_dir , sim = sim):
     i = 0
 
     for f_dir in dircs:
+
         fpdict = co.read_pk(ic_base_dir + '/' + f_dir + '/fingerprints.pk')
         print("[dict%d] with %d is clusting " % (i, fpdict.__len__()))
         ic.make_links(ic.cluster(dict(fpdict), sim, method='average')
                       , ic_base_dir + '/part' + str(i)+'/cluster')
         i += 1
+
+        del fpdict
+        gc.collect()
 
 def rmFiles(tar_dir = ic_base_dir):
     """
