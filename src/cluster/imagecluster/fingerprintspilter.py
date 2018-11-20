@@ -3,15 +3,16 @@ import os, re
 import imagecluster as ic
 import common as co
 import math
+import random
 import gc
-pj = os.path.join
 import shutil
-
+import argparse
+pj = os.path.join
 
 fingerPrintDir='/home/jc/codes/Projects/TBCloth/src/cluster/imgs/imagecluster'
 ic_base_dir = '/home/jc/ictest'
 
-sim = 0.4
+sim = 0.5
 spiltnum = 3
 
 # I ran out ot memory because only my source finger-print file is 8.4G
@@ -60,13 +61,18 @@ def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir,spiltnum=spiltnum):
     gc.collect()
 
 def linkParts( ic_base_dir = ic_base_dir , sim = sim):
-    
+    """
+    Link all divided part by each divided finger-print
+    :param ic_base_dir:
+    :param sim:
+    :return:
+    """
     for dirpath, dirnames, filenames in os.walk(ic_base_dir):
         dircs = dirnames
         break
     if dircs.__len__()==0:
-        print('no folder found !')
-        return
+        print('no former folder found !')
+        spiltFP()
 
     i = 0
 
@@ -81,19 +87,87 @@ def linkParts( ic_base_dir = ic_base_dir , sim = sim):
         del fpdict
         gc.collect()
 
-def rmFiles(tar_dir = ic_base_dir):
+def linkTest( ic_base_dir = ic_base_dir , sim = sim):
     """
-    Remove all files of this spilt folders
-    :param tar_dir: Target direction for remove all children
+    Random link a divided part by its divided finger-print
+    :param ic_base_dir:
+    :param sim:
     :return:
     """
     for dirpath, dirnames, filenames in os.walk(ic_base_dir):
         dircs = dirnames
         break
+    if dircs.__len__()==0:
+        print('no former folder found !')
+        spiltFP()
+
+    print ('Link test')
+
+    f_dir = dircs[random.randint(0,dircs.__len__()-1)]
+    fpdict = co.read_pk(ic_base_dir + '/' + f_dir + '/fingerprints.pk')
+    print("[%s] with %d is clusting " % (f_dir, fpdict.__len__()))
+    ic.make_links(ic.cluster(dict(fpdict), sim, method='average')
+                    , ic_base_dir + '/' + f_dir+'/cluster')
+
+    del fpdict
+    gc.collect()
+
+def rmFiles(tar_dir = ic_base_dir,rmAll = False):
+    """
+    Remove all files of this spilt folders
+    :param tar_dir: Target direction for remove all children
+    :param rmAll: 'False':remove cluster result only
+    :return:
+    """
+    for dirpath, dirnames, filenames in os.walk(ic_base_dir):
+        dircs = dirnames
+        break
+
+
     for f_dir in dircs:
-        if os.path.exists(tar_dir + '/' + f_dir):
+        if rmAll and os.path.exists(tar_dir + '/' + f_dir):
             shutil.rmtree(tar_dir + '/' + f_dir)
+        if (not rmAll) and os.path.exists(tar_dir + '/' + f_dir+'/cluster'):
+            shutil.rmtree(tar_dir + '/' + f_dir + '/cluster')
 
 
-spiltFP()
-linkParts()
+#spiltFP()
+#linkParts()
+#rmFiles(rmAll=False)
+#linkTest()
+
+if __name__ == 'main' or __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+        description=' Spilt large finger-print to several smaller one ; Test or clean them ',
+        formatter_class= argparse.ArgumentDefaultsHelpFormatter
+    )
+
+    parser.add_argument('cmd',choices=['Cluster','Spilt','Test'],help='Cluster it by splilting ; Just spilt ;'
+                                                                      ' Test a divided fp ' )
+
+    parser.add_argument('--sim',default=sim,
+                        help='similarity or each element 0..1')
+
+    parser.add_argument('--rmFile',choices=['all','result','none'],default='result',
+                        help= 'Only work by \'Cluster\' , Remove divided finger-print and result ')
+
+    args = parser.parse_args()
+
+    sim = args.sim
+
+    if args.cmd == 'Cluster':
+
+        if args.rmFile == 'all':
+            rmFiles(rmAll=True)
+        elif args.rmFile == 'result':
+            rmFiles(rmAll=False)
+
+        linkParts()
+    elif args.cmd =='Spilt':
+
+        spiltFP()
+
+    else:
+
+        linkTest()
