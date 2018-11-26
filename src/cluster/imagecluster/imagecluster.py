@@ -2,9 +2,9 @@ from scipy.spatial import distance
 from scipy.cluster import hierarchy
 import numpy as np
 import PIL.Image, os, shutil,sys
-from keras.applications.xception import Xception
+from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
-from keras.applications.xception import preprocess_input
+from keras.applications.vgg16 import preprocess_input
 from keras.models import Model
 import pandas as pd
 import common as co
@@ -32,9 +32,10 @@ def get_model():
     #     _________________________________________________________________
     #     predictions (Dense)          (None, 1000)              4097000
     #
-    base_model = Xception(weights='imagenet', include_top=True)
+    base_model = VGG16(weights='imagenet', include_top=True)
     model = Model(inputs=base_model.input,
-                  outputs=base_model.get_layer('avg_pool').output)
+                  outputs=base_model.get_layer('fc2').output)
+    # xception avg_pool
     return model
 
 
@@ -88,6 +89,8 @@ def fingerprint(fn, model, size):
     # You will find they have no difference between source-image
     # when you display them after that
     # PIL.Image._show(image.array_to_img(arr3d))
+    # I = Image.open(tar_img_path+file) # PIL.Image
+    # L = I.convert('L')
 
     # (1, 224, 224, 3)
     arr4d = np.expand_dims(arr3d, axis=0)

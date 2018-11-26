@@ -9,11 +9,12 @@ import shutil
 import argparse
 pj = os.path.join
 
-fingerPrintDir='/home/jc/codes/Projects/TBCloth/src/cluster/imgs/imagecluster'
-ic_base_dir = '/home/jc/ictest'
+fingerPrintDir='/home/deepcam/ictest'
+ic_base_dir = '/home/deepcam/ictest'
 
-sim = 0.5
-spiltnum = 3
+
+sim = 0.99
+spiltnum = 16
 
 # I ran out ot memory because only my source finger-print file is 8.4G
 # My MEM is 16G .....
@@ -58,7 +59,7 @@ def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir,spiltnum=spiltnum):
         i += 1
 
     del fps,dicts
-    gc.collect()
+
 
 def linkParts( ic_base_dir = ic_base_dir , sim = sim):
     """
@@ -73,9 +74,7 @@ def linkParts( ic_base_dir = ic_base_dir , sim = sim):
     if dircs.__len__()==0:
         print('no former folder found !')
         spiltFP()
-
     i = 0
-
     for f_dir in dircs:
 
         fpdict = co.read_pk(ic_base_dir + '/' + f_dir + '/fingerprints.pk')
@@ -85,7 +84,7 @@ def linkParts( ic_base_dir = ic_base_dir , sim = sim):
         i += 1
 
         del fpdict
-        gc.collect()
+
 
 def linkTest( ic_base_dir = ic_base_dir , sim = sim):
     """
@@ -131,10 +130,25 @@ def rmFiles(tar_dir = ic_base_dir,rmAll = False):
             shutil.rmtree(tar_dir + '/' + f_dir + '/cluster')
 
 
-#spiltFP()
-#linkParts()
-#rmFiles(rmAll=False)
-#linkTest()
+def main(_sim,_cmd,_rmfile,_fingerPrintDir,_ic_base_dir):
+
+    global sim,fingerPrintDir,ic_base_dir
+
+    sim = _sim
+    fingerPrintDir = _fingerPrintDir
+    ic_base_dir = _ic_base_dir
+
+    if _cmd == 'Cluster':
+        if _rmfile == 'all':
+            rmFiles(rmAll=True)
+        elif _rmfile == 'result':
+            rmFiles(rmAll=False)
+        linkParts()
+    elif _cmd =='Spilt':
+        spiltFP()
+    else:
+        linkTest()
+
 
 if __name__ == 'main' or __name__ == '__main__':
 
@@ -156,18 +170,13 @@ if __name__ == 'main' or __name__ == '__main__':
 
     sim = args.sim
 
-    if args.cmd == 'Cluster':
+    cmd = args.cmd
 
-        if args.rmFile == 'all':
-            rmFiles(rmAll=True)
-        elif args.rmFile == 'result':
-            rmFiles(rmAll=False)
+    rmFile = cmd.rmFile
 
-        linkParts()
-    elif args.cmd =='Spilt':
+    main(_sim=sim,_cmd=cmd,_rmfile=rmFile)
 
-        spiltFP()
 
-    else:
-
-        linkTest()
+#246634
+#fps = co.read_pk(fingerPrintDir+'/fingerprints.pk')
+#print ('total num of fingerprints : %d' % fps.__len__())

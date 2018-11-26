@@ -1,108 +1,64 @@
 import os,sys
-from src.cluster.imagecluster import main  # use pycharm run
-from src.cluster.imagecluster import common as co
-#from imagecluster import main   # use python command line
-from keras import backend as K
-K.clear_session()
 import shutil
-import random
-import pandas as pd
-from PIL import Image
+import re
 import argparse
 
+from keras import backend as K
+K.clear_session()
+import pandas as pd
 
-sample_num = 200
-sim = 0.5
+#from src.cluster.imagecluster import main  # use pycharm run
+from imagecluster import main as cluster # use python command line
+from imagecluster import fingerprintspilter
 
+iterCount = 0
+sim = 0.55
 
-tar_img_path = '/home/jc/codes/Projects/TBCloth/src/cluster/imgs/'  # for random sample
-src_img_path = '/home/jc/Data/tianchi/TaoBaoClothesMatchingData/images/'
-itemstxt_path = '/home/jc/codes/Projects/TBCloth/src/classifier/tools/items.txt'
-ic_base_dir='imagecluster'
+# iterate_root_path = '/home/jc/IRoot'
+iterate_root_path = '/home/deepcam/IRoot'
 
-def random_sample():
-    l1=list(pd.read_table(itemstxt_path,sep=' ')['itemid'])
-    sp_l = random.sample(l1,sample_num)
-    print(sp_l.__len__())
+fp_path = '/home/deepcam/Data/imagecluster'
 
-    for itemid in sp_l:
-        try:
-            shutil.copy(src_img_path + str(itemid) + '.jpg', tar_img_path)
-        except Exception, e:
-            # except FileNotFoundError : # python3
-            print(str(itemid)+'.jpg lost !')
-        continue
+imagedir = '/home/deepcam/Data/tbcloth/imgs'
 
 
-def gray_sacale():
-    """
-    trans the tar_img_path's image from rgb to gray_scale
-    :return:
-    """
-    for roots, directs, files in os.walk(tar_img_path):
-        break
-    for file in files:
-        I = Image.open(tar_img_path+file)
-        L = I.convert('L')
-        os.remove(tar_img_path + file)
-        L.save(tar_img_path+file)
+def get_iter_fp(txt_path,save_path):
+    files = pd.read_csv(txt_path)
 
-
-def remove_result(remove_src = True):
-    """
-    remove result of main generate
-    :return:
-    """
-    if remove_src :
-        for roots, directs, files in os.walk(tar_img_path):
-            break
-        for file in files:
-            os.remove(tar_img_path + file)
-    if os.path.exists(tar_img_path+'imagecluster'):
-        shutil.rmtree(tar_img_path+'imagecluster')
-
-def generate():
-    main.main(tar_img_path, sim=sim,ic_base_dir=ic_base_dir)
-    K.clear_session()
-
-def readFP():
-    a = co.read_pk(sys.path[0]+'/imgs/imagecluster/fingerprints.pk')
-    print(a)
-
-
-#remove_result()
-#remove_result(False)
-#gray_sacale()
-#random_sample()
-generate()
 
 
 if __name__ == 'main' or __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='cloth cluster by neural-fingerprints ',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('cmd',choices=['sample','cluster'])
-    parser.add_argument('s_num',default=sample_num)
-    parser.add_argument('src',default=src_img_path)
-    parser.add_argument('base',default=ic_base_dir)
-    parser.add_argument('rmRes',choices=['fp','all','none'],default='none')
-
+    parser.add_argument('--iter', help='Iterate count , default 0 means no iterate',
+                        default=0, type=int)
     args = parser.parse_args()
 
+    iterCount = args.iter
 
-    if args.rmRes == 'fp':
-        remove_result(False)
-    elif args.rmRes=='all':
-        remove_result()
+    if iterCount == 0:
+        cluster.main(imagedir=imagedir,ic_base_dir=fp_path)
+    elif iterCount > 0:
+        # If we have no fp exists , then get one
+        if not os.path.exists(fp_path+'/fingerprints.pk'):
+            cluster.get_fp(imagedir=imagedir,ic_base_dir=fp_path)
 
-    if(args.cmd) == 'sample':
-        sample_num = args.s_num
-        random_sample()
-        main.main(tar_img_path, sim=sim, ic_base_dir=ic_base_dir)
-        K.clear_session()
-    else:
-        main.main(src_img_path, sim=sim, ic_base_dir=ic_base_dir)
-        K.clear_session()
+        # Delete former results by iterating
+        for dirpath, dirnames, filenames in os.walk(iterate_root_path):
+            for dirname in dirnames:
+                if re.match('iter\d+',dirname) != None:
+                    shutil.rmtree(iterate_root_path+'/'+dirname)
+            break
 
+        for count in range(iterCount):
+            folderName = iterate_root_path+'/iter'+str(count)
+            os.makedirs(folderName)
+
+            if count == 0:
+                fingerprintspilter.main(_sim=sim,_cmd='Cluster',_fingerPrintDir=fp_path
+                                        ,_ic_base_dir=folderName)
+            elif count>0:
+                get_iter_fp(iterate_root_path+'/iter'+str(count-1), folderName)
 
 
