@@ -2,9 +2,9 @@ from scipy.spatial import distance
 from scipy.cluster import hierarchy
 import numpy as np
 import PIL.Image, os, shutil,sys
-from keras.applications.vgg16 import VGG16
+from keras.applications.xception import Xception
 from keras.preprocessing import image
-from keras.applications.vgg16 import preprocess_input
+from keras.applications.xception import preprocess_input
 from keras.models import Model
 import pandas as pd
 import common as co
@@ -32,9 +32,9 @@ def get_model():
     #     _________________________________________________________________
     #     predictions (Dense)          (None, 1000)              4097000
     #
-    base_model = VGG16(weights='imagenet', include_top=True)
+    base_model = Xception(weights='imagenet', include_top=True)
     model = Model(inputs=base_model.input,
-                  outputs=base_model.get_layer('fc2').output)
+                  outputs=base_model.get_layer('avg_pool').output)
     # xception avg_pool
     return model
 
@@ -153,12 +153,14 @@ def fingerprints(files, model, size=(224,224)):
     result = {}
     num=files.__len__()
     i=0
+    print('Creating fingerprints')
     for fn in files:
         i+=1
         result[fn]=fingerprint(fn,model,size)
-        sys.stdout.write('\r['+str(int(i*100.0/num))+']%')
+        sys.stdout.write('\r[%.2f]%%' % (i*100.0/num))
         sys.stdout.flush()
     # return dict((fn, fingerprint(fn, model, size)) for fn in files)
+    print('\n')
     return result
 
 def cluster(fps, sim=0.5, method='average', metric='euclidean'): # metric euclidean

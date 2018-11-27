@@ -14,14 +14,13 @@ ic_base_dir = '/home/deepcam/ictest'
 
 
 sim = 0.99
-spiltnum = 16
 
 # I ran out ot memory because only my source finger-print file is 8.4G
 # My MEM is 16G .....
 # Using this script to spilt the big one to some smaller ones
 
 
-def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir,spiltnum=spiltnum):
+def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir):
     """
     Spilt a large finger-print file to several smaller ones
     :param fpdir: The source finger-print file direction
@@ -33,11 +32,19 @@ def spiltFP(fpdir=fingerPrintDir,ic_base_dir = ic_base_dir,spiltnum=spiltnum):
     fps = co.read_pk(fpdir+'/fingerprints.pk')
     print ('total num of fingerprints : %d' % fps.__len__())
 
-    len=fps.__len__()
-    step = math.ceil(len*1.0/spiltnum)
-    dicts=[{}]
+    step = 24000  # Pre-set step
 
-    i=0
+    len=fps.__len__()
+    spiltnum = len/step
+
+    if spiltnum > 1 and (len - step*(spiltnum-1)) < step/2:
+        spiltnum -= 1
+
+    step = math.ceil(len*1.0/spiltnum)
+
+    dicts = [{}]
+
+    i = 0
     count = 0
 
     for k,v in fps.items():
@@ -130,7 +137,7 @@ def rmFiles(tar_dir = ic_base_dir,rmAll = False):
             shutil.rmtree(tar_dir + '/' + f_dir + '/cluster')
 
 
-def main(_sim,_cmd,_rmfile,_fingerPrintDir,_ic_base_dir):
+def main(_sim,_cmd,_rmfile,_fingerPrintDir,_ic_base_dir,):
 
     global sim,fingerPrintDir,ic_base_dir
 

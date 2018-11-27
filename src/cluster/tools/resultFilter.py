@@ -9,10 +9,10 @@ total_num = 498823
 
 #base_dir='/home/jc/deepcam/ictest' #server
 base_dir='/home/deepcam/ictest'
-iterate_dir='/home/deepcam/'
 
 
-def main():
+
+def main( base_dir = base_dir ):
     parts = []
     for dirpath, dirnames, filenames in os.walk(base_dir):
         parts = dirnames
@@ -60,10 +60,11 @@ def main():
 
         pd.Series(file_list).to_csv(base_dir+'/nones.txt',index=False)
 
-def count_num():
-    s1 = pd.read_csv(base_dir+'/nones.txt')
-    print ('\n meaning less imgs count : %d ,about [%d%%]' %(s1.__len__(),int(s1.__len__()*1.0/total_num*100)))
+    s1 = pd.read_csv(base_dir + '/nones.txt')
+    print ('\n meaning less imgs count : %d ,about [%d%%]' % (s1.__len__(), int(s1.__len__() * 1.0 / total_num * 100)))
+
+
 
 if __name__ == 'main' or __name__ == '__main__':
     main()
-    count_num()
+

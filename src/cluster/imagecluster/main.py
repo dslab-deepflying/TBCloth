@@ -36,7 +36,7 @@ def main(imagedir,ic_base_dir = 'imagecluster', sim=0.5):
     print("clustering ...")
     ic.make_links(ic.cluster(fps, sim,method='average'), pj(ic_base_dir, 'clusters'))
 
-def get_fp(imagedir,ic_base_dir = 'imagecluster', sim=0.5):
+def get_fp(imagedir,ic_base_dir = 'imagecluster'):
 
     dbfn = pj(ic_base_dir, 'fingerprints.pk')
     if os.path.exists(os.path.dirname(dbfn)):
