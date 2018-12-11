@@ -2,10 +2,15 @@ from scipy.spatial import distance
 from scipy.cluster import hierarchy
 import numpy as np
 import PIL.Image, os, shutil,sys
-from keras.applications.xception import Xception
+from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
-from keras.applications.xception import preprocess_input
+from keras.applications.inception_v3 import preprocess_input
 from keras.models import Model
+
+import tensorflow as tf
+from tensorflow.python.framework import graph_util
+
+
 import pandas as pd
 import common as co
 #from imagecluster import common as co
@@ -32,11 +37,27 @@ def get_model():
     #     _________________________________________________________________
     #     predictions (Dense)          (None, 1000)              4097000
     #
-    base_model = Xception(weights='imagenet', include_top=True)
+    base_model = InceptionV3(weights='imagenet', include_top=True)
     model = Model(inputs=base_model.input,
-                  outputs=base_model.get_layer('avg_pool').output)
-    # xception avg_pool
+                 outputs=base_model.get_layer('avg_pool').output)
+    #xception avg_pool
+    #inceptionv3 avg_pool
     return model
+
+def get_model2():
+
+    output_graph_path = '/home/deepcam/Data/retrained_graph.pb'
+
+    with tf.Session() as sess :
+        tf.global_variables_initializer().run()
+        output_graph_def = tf.GraphDef()
+        with open( output_graph_path , 'rb' ) as f :
+            output_graph_def.ParseFromString(f.read())
+            _ = tf.import_graph_def(output_graph_def,name='')
+
+        summary_writer = tf.summary.FileWriter('log',sess.graph)
+
+
 
 
 def fingerprint(fn, model, size):
@@ -157,13 +178,14 @@ def fingerprints(files, model, size=(224,224)):
     for fn in files:
         i+=1
         result[fn]=fingerprint(fn,model,size)
-        sys.stdout.write('\r[%.2f]%%' % (i*100.0/num))
+        sys.stdout.write('\r[%.2f%%]' % (i*100.0/num))
         sys.stdout.flush()
     # return dict((fn, fingerprint(fn, model, size)) for fn in files)
     print('\n')
     return result
 
-def cluster(fps, sim=0.5, method='average', metric='euclidean'): # metric euclidean
+def cluster(fps, sim=0.5, method='average', metric='cosine'):
+    # metric euclidean
     """Hierarchical clustering of images based on image fingerprints.
 
     Parameters
@@ -258,3 +280,5 @@ def make_links(clusters, cluster_dr):
                 # shutil.rmtree(os.path.dirname(link))
                 os.makedirs(os.path.dirname(link))
             os.symlink(os.path.abspath(fn), link)
+
+get_model2()
